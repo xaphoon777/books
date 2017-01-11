@@ -23,6 +23,95 @@ function buildBookRows(books) {
     return _.template( $( "#book-tmpl" ).html(), {"books": books});
 }
 
+// Delete book
+function deleteBook(id) {
+    clearNotifications();
+    if (id=="") {
+        $('#formMsgs').append($('<span class="invalid">Book not selected. Select book from list before proceed</span>'));
+        return;
+    }
+
+    // Display the loader widget
+    $.mobile.loading("show");
+
+    $.ajax({
+        url: "rest/books/" + id,
+        type: "DELETE",
+        cache: false,
+        success: function() {
+            clearInputFields();
+            $('#formMsgs').append($('<span class="success">Book deleted</span>'));
+            $( "#book-table" ).table( "refresh" );
+        },
+        error: function(error) {
+            if ((error.status == 409) || (error.status == 400)) {
+                //console.log("Validation error registering user!");
+
+                var errorMsg = $.parseJSON(error.responseText);
+
+                $.each(errorMsg, function(index, val) {
+                    $('<span class="invalid">' + val + '</span>').insertAfter($('#' + index));
+                });
+            } else if ((error.status == 404)) {
+                //console.log("error - unknown server issue");
+                $('#formMsgs').append($('<span class="invalid">Book not found</span>'));
+            } else {
+                //console.log("error - unknown server issue");
+                $('#formMsgs').append($('<span class="invalid">Unknown server error</span>'));
+            }
+        },
+        complete: function() {
+            // Hide the loader widget
+            $.mobile.loading("hide");
+        }
+    });
+}
+
+// Changes book's catalogue private to public and vice versa
+function switchCatalogue (id) {
+    clearNotifications();
+    if (id=="") {
+        $('#formMsgs').append($('<span class="invalid">Book not selected. Select book from list before proceed</span>'));
+        return;
+    }
+
+    // Display the loader widget
+    $.mobile.loading("show");
+
+    $.ajax({
+        url: "rest/books/" + id,
+        type: "PUT",
+        cache: false,
+        success: function() {
+            $('#formMsgs').append($('<span class="success">Catalogue changed</span>'));
+            var catalog = $("#register-art  #catalogue").val();
+            renderCatalogue(catalog, "viceVersa");
+            $( "#book-table" ).table( "refresh" );
+        },
+        error: function(error) {
+            if ((error.status == 409) || (error.status == 400)) {
+                //console.log("Validation error registering user!");
+
+                var errorMsg = $.parseJSON(error.responseText);
+
+                $.each(errorMsg, function(index, val) {
+                    $('<span class="invalid">' + val + '</span>').insertAfter($('#' + index));
+                });
+            } else if ((error.status == 404)) {
+                //console.log("error - unknown server issue");
+                $('#formMsgs').append($('<span class="invalid">Book not found</span>'));
+            } else {
+                //console.log("error - unknown server issue");
+                $('#formMsgs').append($('<span class="invalid">Unknown server error</span>'));
+            }
+        },
+        complete: function() {
+            // Hide the loader widget
+            $.mobile.loading("hide");
+        }
+    });
+}
+
 /* Uses JAX-RS GET to retrieve current book list */
 function updateBookTable() {
     // Display the loader widget
@@ -65,13 +154,15 @@ function registerBook(bookData) {
         type: "POST",
         data: JSON.stringify(bookData),
         success: function(data) {
-            //console.log("Book registered");
-
-            //clear input fields
-            $('#reg')[0].reset();
+            
+            clearNotifications();
 
             //mark success on the registration form
-            $('#formMsgs').append($('<span class="success">Book Registered</span>'));
+            $('#formMsgs').append($('<span class="success">Book saved</span>'));
+
+            // make consistent form state for
+            $("#register-art  #id").val(data.id);
+            renderCatalogue("public");
 
             updateBookTable();
         },
@@ -95,34 +186,45 @@ function registerBook(bookData) {
         }
     });
 }
-function formatDate(date) {
-    var d = new Date(date),
-        month = '' + (d.getMonth() + 1),
-        day = '' + d.getDate(),
-        year = d.getFullYear();
 
-    if (month.length < 2) month = '0' + month;
-    if (day.length < 2) day = '0' + day;
-
-    return [day, month, year].join('.');
-}
 function onRowClick(tr) {
-    // alert($(tr).find("td:first").text().replace('Id',''));
     var id = $(tr).find("td>b:contains('Id')").parent().contents().last().text()
     var title = $(tr).find("td>b:contains('Title')").parent().contents().last().text();
     var author = $(tr).find("td>b:contains('Author')").parent().contents().last().text();
     var releaseDate = $(tr).find("td>b:contains('Release date')").parent().contents().last().text();
-    var cat = $(tr).find("td>b:contains('Catalogue')").parent().contents().last().text();
-    var private = cat == 'private';
-
+    var catalogue = $(tr).find("td>b:contains('Catalogue')").parent().contents().last().text();
+    
+    $("#register-art  #id").val(id);
     $("#register-art  #title").val(title);
     $("#register-art  #author").val(author);
     $("#register-art  #releaseDate").val(releaseDate);
-    // $("#register-art  #releaseDate").trigger('datebox', { 'method': 'doset' });
-    // $("#register-art  #releaseDate").trigger('datebox', {'method':'set', 'value':releaseDate});
-    $("#register-art  #private").prop('checked', private).checkboxradio('refresh');
+    renderCatalogue(catalogue);
+    $( ":mobile-pagecontainer" ).pagecontainer( "change", "#register-art", { role: "slide" } );
+}
 
+function clearInputFields() {
+    //clear input fields
+    $('#reg')[0].reset();
+    // clear hidden id-field
+    $('#id').val(null);
+    renderCatalogue("public")
+    //clear existing msgs
+    $('span.invalid').remove();
+    $('span.success').remove();
+}
 
+function clearNotifications() {
+    $('span.invalid').remove();
+    $('span.success').remove();
+}
 
-    // });
+function renderCatalogue(catalog, viceVersa) {
+    var condition = (viceVersa ? "private" : "public")
+    if (catalog == condition) {
+        $("#register-art  #catalogue").val("public");
+        $("#register-art  #private").val(false);
+    } else {
+        $("#register-art  #catalogue").val("private");
+        $("#register-art  #private").val(true);
+    }
 }

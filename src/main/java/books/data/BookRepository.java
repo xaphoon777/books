@@ -3,6 +3,7 @@ package books.data;
 import books.model.Book;
 import books.model.Book_;
 
+import javax.ejb.Stateless;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -14,7 +15,7 @@ import java.util.List;
 /**
  * Created by Alex Volobuev on 06.01.2017.
  */
-@ApplicationScoped
+@Stateless
 public class BookRepository {
     @Inject
     private EntityManager em;
@@ -23,8 +24,8 @@ public class BookRepository {
         return em.find(Book.class, id);
     }
 
-    public void saveOrUpdate (Book book) {
-        em.merge(book);
+    public Book saveOrUpdate (Book book) {
+        return em.merge(book);
     }
 
     public List<Book> findAllOrderedByTitle() {

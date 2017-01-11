@@ -7,13 +7,11 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
+import javax.validation.Validator;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Logger;
 
 /**
@@ -26,6 +24,8 @@ public class BookController {
     private Logger log;
     @Inject
     private BookService bookService;
+    @Inject
+    private Validator validator;
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -43,6 +43,18 @@ public class BookController {
         }
         return book;
     }
+
+    @PUT
+    @Path("/{id:[0-9][0-9]*}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Book switchCatalogue(@PathParam("id") long id) {
+        Book book = bookService.switchCatalogue(id);
+        if (book == null) {
+            throw new WebApplicationException(Response.Status.NOT_FOUND);
+        }
+        return book;
+    }
+
     @DELETE
     @Path("/{id:[0-9][0-9]*}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -54,8 +66,6 @@ public class BookController {
         return book;
     }
 
-
-
     /**
      * Creates a new book from the values provided. Performs validation, and will return a JAX-RS response with either 200 ok,
      * or with a map of fields, and related errors.
@@ -66,7 +76,8 @@ public class BookController {
     public Response saveOrUpdate(Book book) {
         Response.ResponseBuilder builder;
         try {
-            bookService.saveOrUpdate(book);
+            validate(book);
+            book = bookService.saveOrUpdate(book);
             // Create an "ok" response
             builder = Response.ok().entity(book);
         } catch (ConstraintViolationException ce) {
@@ -95,5 +106,24 @@ public class BookController {
             responseObj.put(violation.getPropertyPath().toString(), violation.getMessage());
         }
         return Response.status(Response.Status.BAD_REQUEST).entity(responseObj);
+    }
+    /**
+     * <p>
+     * Validates the given Book variable and throws validation exceptions based on the type of error. If the error is standard
+     * bean validation errors then it will throw a ConstraintValidationException with the set of the constraints violated.
+     * </p>
+     * <p>
+     * If the error is caused because an existing book with the same email is registered it throws a regular validation
+     * exception so that it can be interpreted separately.
+     * </p>
+     *
+     * @param book Book to be validated
+     * @throws ConstraintViolationException If Bean Validation errors exist
+     */
+    private void validate(Book book) throws ConstraintViolationException {
+        Set<ConstraintViolation<Book>> violations = validator.validate(book);
+        if (!violations.isEmpty()) {
+            throw new ConstraintViolationException(new HashSet<ConstraintViolation<?>>(violations));
+        }
     }
 }
