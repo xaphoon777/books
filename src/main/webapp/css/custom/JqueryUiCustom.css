@@ -18,3 +18,20 @@
     padding-left: 4em;
     /*width: 1.275em;*/
 }
+
+.book-list thead th {
+    border-bottom: 1px solid #1a14d6; /* non-RGBA fallback */
+    border-bottom: 1px solid rgba(0, 0, 0, .1);
+}
+
+.book-list tbody th,
+.book-list tbody td {
+    border-bottom: 1px solid #1620e6; /* non-RGBA fallback  */
+    border-bottom: 1px solid rgba(0, 0, 0, .05);
+}
+
+.book-list tbody tr:nth-child(odd) td,
+.book-list tbody tr:nth-child(odd) th {
+    background-color: rgba(255, 235, 51, 0.3); /* non-RGBA fallback  */
+    background-color: rgba(255, 244, 142, 0.42);
+}

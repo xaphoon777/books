@@ -162,18 +162,18 @@
                     <p>Test CRUD J2EE application © -=Ale][=- </p>
                     <p>Release notes:</p>
                     <ul id="features">
-                        <li class="feature">v.0.3</li>
-                        <li class="feature">Выпилена корявая кнопка с полем и заменена на кучерявый переключатель</li>
+                        <hr>
+                        <b>v.1.0 RC</b>
+                        <li class="feature">Выпилена корявая кнопка с полем и заменена на переключатель</li>
                         <li class="feature">Выпилена куча костылей из FrontEnd-части в связи с п.1</li>
                         <li class="feature">Выпилена куча костылей из BackEnd-части в связи с п.1</li>
-                        <li class="feature">Теперь все сделано так как надо - самому нравится.. если не будет новых
-                            замечаний - можно тестить и в продакшен
+                        <li class="feature">Теперь мне все нравится.
                         </li>
-                        <li class="feature">---</li>
-                        <li class="feature">v.0.2</li>
+                        <hr>
+                        <b>v.0.2</b>
                         <li class="feature">Добавлена поддержка русских букв</li>
-                        <li class="feature">---</li>
-                        <li class="feature">v.0.1</li>
+                        <hr>
+                        <b>v.0.1</b>
                         <li class="feature">Сервис стал EJB</li>
                         <li class="feature">Флажок "private" стал кнопкой c полем</li>
                         <li class="feature">Устранен баг "при клике на таблице ничего не происходит в IE"</li>
@@ -226,8 +226,7 @@
                             </div>
                             <div class="ui-field-contain">
                                 <label for="title">Title:</label>
-                                <input type="text" name="title" id="title" placeholder="Book's title" required
-                                       autofocus/>
+                                <input type="text" name="title" id="title" placeholder="Book's title" required/>
                             </div>
                             <div class="ui-field-contain">
                                 <label for="author">Author:</label>
@@ -274,7 +273,8 @@
                 <div class="wrap">
                     <button id="refreshButton" data-role="button" data-inline="true" data-icon="refresh">Refresh Books
                     </button>
-                    <table data-role="table" id="book-table" data-mode="reflow" class="app-responsive table-stroke">
+                    <!--table-stroke-->
+                    <table data-role="table" id="book-table" data-mode="reflow" class="app-responsive book-list">
                         <thead>
                         <tr>
                             <th data-priority="1">Id</th>
