@@ -31,6 +31,8 @@
     <!-- For minification, uncomment out this file -->
     <!--<link rel="stylesheet" href="css/jquery.mobile-1.4.2.min.css"/>-->
 
+    <link rel="stylesheet" href="css/custom/JqueryUiCustom.css"/>
+
     <!-- For minification, comment out this link -->
     <link rel="stylesheet" href="css/screen.css"/>
     <!-- For minification, uncomment out this file -->
@@ -108,12 +110,6 @@
                 var bookId = $('#id').val();
                 deleteBook(bookId);
             });
-            // Register an event listener for Change catalogue event
-            $('#changeCat').click(function (event) {
-                event.preventDefault();
-                var bookId = $('#id').val();
-                switchCatalogue(bookId);
-            });
 
             //Register the cancel listener
             $('#cancel').click(function (event) {
@@ -166,6 +162,14 @@
                     <p>Test CRUD J2EE application © -=Ale][=- </p>
                     <p>Release notes:</p>
                     <ul id="features">
+                        <li class="feature">v.0.3</li>
+                        <li class="feature">Выпилена корявая кнопка с полем и заменена на кучерявый переключатель</li>
+                        <li class="feature">Выпилена куча костылей из FrontEnd-части в связи с п.1</li>
+                        <li class="feature">Выпилена куча костылей из BackEnd-части в связи с п.1</li>
+                        <li class="feature">Теперь все сделано так как надо - самому нравится.. если не будет новых
+                            замечаний - можно тестить и в продакшен
+                        </li>
+                        <li class="feature">---</li>
                         <li class="feature">v.0.2</li>
                         <li class="feature">Добавлена поддержка русских букв</li>
                         <li class="feature">---</li>
@@ -173,7 +177,9 @@
                         <li class="feature">Сервис стал EJB</li>
                         <li class="feature">Флажок "private" стал кнопкой c полем</li>
                         <li class="feature">Устранен баг "при клике на таблице ничего не происходит в IE"</li>
-                        <li class="feature">Устранено неконсистентное поведение на форме при попытке проделать операцию над несохраненными данными</li>
+                        <li class="feature">Устранено неконсистентное поведение на форме при попытке проделать операцию
+                            над несохраненными данными
+                        </li>
                         <li class="feature">JS-код немного приведен в порядок для переиспользования</li>
                         <li class="feature">.. другие мелкие фиксы</li>
                     </ul>
@@ -219,9 +225,6 @@
                                 <input type="hidden" name="id" id="id"/>
                             </div>
                             <div class="ui-field-contain">
-                                <input type="hidden" name="private" id="private"/>
-                            </div>
-                            <div class="ui-field-contain">
                                 <label for="title">Title:</label>
                                 <input type="text" name="title" id="title" placeholder="Book's title" required
                                        autofocus/>
@@ -236,24 +239,13 @@
                                        placeholder="Book's release date"
                                        data-options='{"mode": "calbox","useFocus": true, "overrideDateFormat":"%d.%m.%Y"}'/>
                             </div>
-                            <!--<div class="ui-field-contain">-->
-                            <!--<label for="private">Private catalogue:</label>-->
-                            <!--<input type="checkbox" name="private" id="private" placeholder="In private catalogue" value="true"/>-->
-                            <!--</div>-->
-                            <div class="ui-grid-a">
-                                <div class="ui-block-a">
-                                    <div class="ui-field-contain">
-                                        <label for="catalogue">Catalogue:</label>
-                                        <input type="text" disabled name="catalogue" id="catalogue"/>
-
-                                    </div>
-                                </div>
-                                <div class="ui-block-b">
-                                    <input type="button" name="changeCat" id="changeCat" value="Switch"
-                                           class="ui-btn ui-icon-edit ui-btn-icon-notext ui-corner-all" data-inline="true"/>
-                                    <!--<a href="#" class="ui-btn ui-icon-edit ui-btn-icon-notext ui-corner-all" data-inline="true">No text</a>-->
-                                </div>
+                            <div class="ui-field-contain">
+                                 <label for="isPrivate">Catalogue:</label>
+                                 <input type="checkbox" value="true" data-role="flipswitch" name="private"
+                                        id="isPrivate" data-on-text="Private" data-off-text="Public"
+                                        data-wrapper-class="custom-label-flipswitch, custom-size-flipswitch">
                             </div>
+
                             <div id="formMsgs"></div>
                             <div class="ui-grid-b">
                                 <div class="ui-block-a"><input type="submit" id="register" value="Save" data-theme="b">
@@ -268,6 +260,7 @@
                 </div>
             </div>
         </article>
+
 
         <!-- New HTML5 article tag -->
         <article id="book-art" data-role="page" data-title="List Books">

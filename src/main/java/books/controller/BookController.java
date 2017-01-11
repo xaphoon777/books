@@ -44,17 +44,6 @@ public class BookController {
         return book;
     }
 
-    @PUT
-    @Path("/{id:[0-9][0-9]*}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Book switchCatalogue(@PathParam("id") long id) {
-        Book book = bookService.switchCatalogue(id);
-        if (book == null) {
-            throw new WebApplicationException(Response.Status.NOT_FOUND);
-        }
-        return book;
-    }
-
     @DELETE
     @Path("/{id:[0-9][0-9]*}")
     @Produces(MediaType.APPLICATION_JSON)

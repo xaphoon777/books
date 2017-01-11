@@ -23,11 +23,11 @@ public class Book {
 
     @NotNull
     @Size(min = 1, max = 45, message = "1-45 letters")
-    @Pattern(regexp = "[\\w а-яА-Я']*", message = "Некорректные символы")
+    @Pattern(regexp = "[\\w а-яА-Я']*", message = "Incorrect symbols")
     private String title;
 
     @Size(min = 1, max = 25, message = "1-25 letters")
-    @Pattern(regexp = "[\\w а-яА-Я']*", message = "Некорректные символы")
+    @Pattern(regexp = "[\\w а-яА-Я']*", message = "Incorrect symbols")
     private String author;
 
     @NotNull

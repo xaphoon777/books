@@ -67,51 +67,6 @@ function deleteBook(id) {
     });
 }
 
-// Changes book's catalogue private to public and vice versa
-function switchCatalogue (id) {
-    clearNotifications();
-    if (id=="") {
-        $('#formMsgs').append($('<span class="invalid">Book not selected. Select book from list before proceed</span>'));
-        return;
-    }
-
-    // Display the loader widget
-    $.mobile.loading("show");
-
-    $.ajax({
-        url: "rest/books/" + id,
-        type: "PUT",
-        cache: false,
-        success: function() {
-            $('#formMsgs').append($('<span class="success">Catalogue changed</span>'));
-            var catalog = $("#register-art  #catalogue").val();
-            renderCatalogue(catalog, "viceVersa");
-            $( "#book-table" ).table( "refresh" );
-        },
-        error: function(error) {
-            if ((error.status == 409) || (error.status == 400)) {
-                //console.log("Validation error registering user!");
-
-                var errorMsg = $.parseJSON(error.responseText);
-
-                $.each(errorMsg, function(index, val) {
-                    $('<span class="invalid">' + val + '</span>').insertAfter($('#' + index));
-                });
-            } else if ((error.status == 404)) {
-                //console.log("error - unknown server issue");
-                $('#formMsgs').append($('<span class="invalid">Book not found</span>'));
-            } else {
-                //console.log("error - unknown server issue");
-                $('#formMsgs').append($('<span class="invalid">Unknown server error</span>'));
-            }
-        },
-        complete: function() {
-            // Hide the loader widget
-            $.mobile.loading("hide");
-        }
-    });
-}
-
 /* Uses JAX-RS GET to retrieve current book list */
 function updateBookTable() {
     // Display the loader widget
@@ -140,6 +95,9 @@ the refresh the book table, or process JAX-RS response codes to update
 the validation errors.
  */
 function registerBook(bookData) {
+
+    clearNotifications();
+    
     //clear existing  msgs
     $('span.invalid').remove();
     $('span.success').remove();
@@ -154,16 +112,10 @@ function registerBook(bookData) {
         type: "POST",
         data: JSON.stringify(bookData),
         success: function(data) {
-            
-            clearNotifications();
-
             //mark success on the registration form
             $('#formMsgs').append($('<span class="success">Book saved</span>'));
-
             // make consistent form state for
-            $("#register-art  #id").val(data.id);
-            renderCatalogue("public");
-
+            $("#register-art").find("#id").val(data.id);
             updateBookTable();
         },
         error: function(error) {
@@ -192,13 +144,13 @@ function onRowClick(tr) {
     var title = $(tr).find("td>b:contains('Title')").parent().contents().last().text();
     var author = $(tr).find("td>b:contains('Author')").parent().contents().last().text();
     var releaseDate = $(tr).find("td>b:contains('Release date')").parent().contents().last().text();
-    var catalogue = $(tr).find("td>b:contains('Catalogue')").parent().contents().last().text();
-    
-    $("#register-art  #id").val(id);
-    $("#register-art  #title").val(title);
-    $("#register-art  #author").val(author);
-    $("#register-art  #releaseDate").val(releaseDate);
-    renderCatalogue(catalogue);
+    var isPrivate = $(tr).find("td>b:contains('Catalogue')").parent().contents().last().text() == 'private';
+
+    $("#register-art").find("#id").val(id);
+    $("#register-art").find("#title").val(title);
+    $("#register-art").find("#author").val(author);
+    $("#register-art").find("#releaseDate").val(releaseDate);
+    $("#register-art").find("#isPrivate").prop('checked', isPrivate);
     $( ":mobile-pagecontainer" ).pagecontainer( "change", "#register-art", { role: "slide" } );
 }
 
@@ -207,7 +159,7 @@ function clearInputFields() {
     $('#reg')[0].reset();
     // clear hidden id-field
     $('#id').val(null);
-    renderCatalogue("public")
+    $("#register-art").find("#isPrivate").prop('checked', false);
     //clear existing msgs
     $('span.invalid').remove();
     $('span.success').remove();
@@ -216,15 +168,4 @@ function clearInputFields() {
 function clearNotifications() {
     $('span.invalid').remove();
     $('span.success').remove();
-}
-
-function renderCatalogue(catalog, viceVersa) {
-    var condition = (viceVersa ? "private" : "public")
-    if (catalog == condition) {
-        $("#register-art  #catalogue").val("public");
-        $("#register-art  #private").val(false);
-    } else {
-        $("#register-art  #catalogue").val("private");
-        $("#register-art  #private").val(true);
-    }
 }
