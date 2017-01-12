@@ -277,7 +277,7 @@
                     <table data-role="table" id="book-table" data-mode="reflow" class="app-responsive book-list">
                         <thead>
                         <tr>
-                            <th data-priority="1">Id</th>
+                            <th style="display:none;" data-priority="1">Id</th>
                             <th data-priority="persist">Title</th>
                             <th data-priority="2">Author</th>
                             <th data-priority="3">Release date</th>
@@ -313,7 +313,7 @@
 <script type="text/template" id="book-tmpl">
     <% _.each(books, function(book) { %>
     <tr onclick="onRowClick(this)">
-        <td><%=book.id%></td>
+        <td style="display:none;"><%=book.id%></td>
         <td><%=book.title%></td>
         <td><%=book.author%></td>
         <td><%=book.releaseDate%></td>
